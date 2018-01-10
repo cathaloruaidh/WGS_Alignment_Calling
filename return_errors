@@ -1,0 +1,101 @@
+0	sys	Main script returned without error
+1	sys	RESERVED: general error
+2	sys	RESERVED: Misuse of shell builtins
+3	sys	Script directory doesn't exist 
+4	sys	Filter directory within script directory doesn't exist
+5	sys	Analysis directory within script directory doesn't exist
+6	sys	Plink was not found anywhere
+7	sys	Rscript was not found anywhere
+8	sys	Something is wrong with the current directory. What have you done??
+9	sys	The BED and one of the PED/MAP files are missing, cannot continue. 
+10	sys	R files directory within script directory doesn't exist
+11	script	Initialisation script returned an error at some point. 
+12	script	Invalid flag
+13	script	Flag requires argument
+14	script	Error with flags
+15	plink	Error with soft --geno [0.1]
+16	plink	Error with --indep-pairwise [50] [5] [0.25]
+17	plink	Error with --extract from pruned data
+18	plink	Error with --missing
+19	plink	Error with --mind [0.05]
+20	plink	Error with --make-bed on initialisation
+21	plink	Error with --check-sex
+22	plink	Error with --remove of sexprobs
+23	plink	Error with --het
+24	plink	Error with --remove of heterozygosity problems [3.5]
+25	plink	Error with hard --geno [0.05]
+26	plink	Error with --test-missing
+27	plink	Error with --remove of case/control missingness
+28	plink	Error with --freq
+29	plink	Error with --maf [0.05]
+30	plink	Error with --hardy
+31	plink	Error with --hwe [0.000005]
+32	plink	Error with --mendel
+33	plink	Error with --me [0.005 0.005]
+34	plink	Error with --genome rel-check full
+35	plink	Error with --remove of poorly related individuals/families
+36	r	Error with r heterozygosity extraction
+37	r	Error with case/control missing filter
+38	plink	Error with --genome
+39	plink	Error with --remove of overly-related individuals/families
+40	r	Error with plotting variant missingness
+41	r	Error with plotting pruned histograms
+42	r	Error with plotting individual missingness
+43	r	Error with plotting sex check inbreeding
+44	r	Error with plotting heterozygosity distribution
+45	r	Error with plotting stricter variant missingness
+46	r	Error with plotting MAF
+47	r	Error with plotting HWE test results
+48	r	Error with plotting Mendelian errors
+49	r	Error with plotting IBD graph for related individuals
+50	script	Error - .lmiss file not found
+51	script	Error - .log file from prune analysis not found
+52	script	Error - .imiss file not found
+53	script	Error - .sexcheck file not found
+54	script	Error - .het file not found
+55	script	Error - .lmiss file not found
+56	script	Error - .missing file not found
+57	script	Error - .frq file not found
+58	script	Error - .hwe file not found
+59	script	Error - .imendel file not found
+60	script	Error - .lmendel file not found
+61	script	Error - .fmendel file not found
+62	script	Error - .prune.in file not found
+63	script	Error - .sexcheck file not found
+64	script	Error - .het.fail file not found
+65	script	Error - .missing.fail file not found
+66	script	Error - .rel.genome.fail file not found
+67	script	Error - .genome.fail file not found
+68	
+69	
+70	
+71	
+72	
+73	
+74	
+75	
+76	
+77	
+78	
+79	
+80	
+81	
+82	
+83	
+84	
+85	
+86	
+87	
+88	
+89	
+90	
+91	
+92	
+93	
+94	
+95	
+96	
+97	
+98	
+99	
+100	
