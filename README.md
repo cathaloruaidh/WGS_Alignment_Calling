@@ -32,9 +32,11 @@ The following reference datasets are used:
  
 # Pipeline Overview
 
-# `01_index`
+## `01_index`
 **Description** - Index the reference genome with `bwa index`. 
+
 **Input Files** - 
+
 **Output Files** -
 
 2. `02_dict` - create the sequence ductionary for the reference genome with `picard CreateSequenceDictionary`. 
