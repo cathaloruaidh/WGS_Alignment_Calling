@@ -14,6 +14,7 @@ The following reference datasets are used:
 - HapMap
 
 # Help
+```
 -a, --alt - Run alternate pipeline (mark duplicates) [false]
 -c, --clean - Remove all input files once finished [false] 
 -d, --dbsnp <FILE> - dbSNP VCF file [v 150]
@@ -27,6 +28,7 @@ The following reference datasets are used:
 -t, --threads <INT> - Number of threads for multithreaded processes [4]
 -v, --verbose <INT> - Set verbosity level [3]
 -x, --mem-max <INT> Java maximum memory [6G] 
+ ```
  
 # Pipeline Overview
 1. `01_index` - index the reference genome with `bwa index`
