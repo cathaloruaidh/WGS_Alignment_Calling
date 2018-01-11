@@ -39,18 +39,108 @@ The following reference datasets are used:
 
 **Output Files** -
 
-2. `02_dict` - create the sequence ductionary for the reference genome with `picard CreateSequenceDictionary`. 
-3. `03_align` - align the paired end FASTQ files to the reference genome with `bwa mem`. See below for notes on the alternate pipeline. 
-4. `04_rg` - replace the read group with the sample details (**not implemented**)
-5. `05_reorder` - reorder the BAM file to 
-6. `06_sort`
-7. `07_validate`
-8. `08_markDup`
-9. `09_rtc`
-10. `10_indelRealign`
-11. `11_baseRecal`
-12. `12_baseRecalPost`
-13. `13_analyse`
-14. `14_printReads`
-15. `15_validate`
-16. `16_haplotype`
+## `02_dict`
+**Description** - create the sequence ductionary for the reference genome with `picard CreateSequenceDictionary`. 
+
+**Input Files** - 
+
+**Output Files** -
+
+## `03_align`
+**Description** - align the paired end FASTQ files to the reference genome with `bwa mem`. See below for notes on the alternate pipeline. 
+
+**Input Files** - 
+
+**Output Files** -
+
+## `04_rg` - 
+**Description** - replace the read group with the sample details (**not implemented**)
+
+**Input Files** - 
+
+**Output Files** -
+
+## `05_reorder` - 
+**Description** - reorder the BAM file to 
+
+**Input Files** - 
+
+**Output Files** -
+
+## `06_sort`
+**Description** - Index the reference genome with `bwa index`. 
+
+**Input Files** - 
+
+**Output Files** -
+
+## `07_validate`
+**Description** - Index the reference genome with `bwa index`. 
+
+**Input Files** - 
+
+**Output Files** -
+
+## `08_markDup`
+**Description** - Index the reference genome with `bwa index`. 
+
+**Input Files** - 
+
+**Output Files** -
+
+## `09_rtc`
+**Description** - Index the reference genome with `bwa index`. 
+
+**Input Files** - 
+
+**Output Files** -
+
+## `10_indelRealign`
+**Description** - Index the reference genome with `bwa index`. 
+
+**Input Files** - 
+
+**Output Files** -
+
+## `11_baseRecal`
+**Description** - Index the reference genome with `bwa index`. 
+
+**Input Files** - 
+
+**Output Files** -
+
+## `12_baseRecalPost`
+**Description** - Index the reference genome with `bwa index`. 
+
+**Input Files** - 
+
+**Output Files** -
+
+## `13_analyse`
+**Description** - Index the reference genome with `bwa index`. 
+
+**Input Files** - 
+
+**Output Files** -
+
+## `14_printReads`
+**Description** - Index the reference genome with `bwa index`. 
+
+**Input Files** - 
+
+**Output Files** -
+
+## `15_validate`
+**Description** - Index the reference genome with `bwa index`. 
+
+**Input Files** - 
+
+**Output Files** -
+
+## `16_haplotype`
+## `01_index`
+**Description** - Index the reference genome with `bwa index`. 
+
+**Input Files** - 
+
+**Output Files** -
