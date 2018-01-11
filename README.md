@@ -3,10 +3,11 @@ WGS Variant Calling pipeline from paired-end FASTQ to gVCF
 
 # Dependencies
 The pipeline uses the following programs: 
-- GATK v 3.4-0-g7e26428
-- bwa v 0.7.12-r1039
-- samtools 1.4.1
-- picard 2.9.2
+- `gatk` 3.4-0-g7e26428
+- `bwa` 0.7.12-r1039
+- `samtools` 1.4.1
+- `picard` 2.9.2
+- `samblaster` 0.1.24
 
 The following reference datasets are used: 
 - GRCh38 reference genome
@@ -35,72 +36,72 @@ The following reference datasets are used:
 ## `01_index`
 **Description** - Index the reference genome with `bwa index`. 
 
-**Input Files** - 
+**Input Files** - `REFERENCE.fa`
 
-**Output Files** -
+**Output Files** - `REFERENCE.fa.amb`, `REFERENCE.fa.ann`, `REFERENCE.fa.bwt`, `REFERENCE.fa.pac` and `REFERENCE.fa.sa` files. 
 
 ## `02_dict`
 **Description** - create the sequence ductionary for the reference genome with `picard CreateSequenceDictionary`. 
 
-**Input Files** - 
+**Input Files** - `REFERENCE.fa`
 
-**Output Files** -
+**Output Files** - `REFEREMCE.dict`
 
 ## `03_align`
-**Description** - align the paired end FASTQ files to the reference genome with `bwa mem`. See below for notes on the alternate pipeline. 
+**Description** - align the paired end FASTQ files to the reference genome with `bwa mem`. The alternate pipeline (specified by `-a, --alt`) marks duplicates reads at this stage with `samblaster`. Default is to mark duplicates with `picard` later. 
 
-**Input Files** - 
+**Input Files** - `FILE_R1.fastq` and `FILE_R2.fastq` (`gzip`d files accepted). 
 
-**Output Files** -
+**Output Files** - `FILE.bam`
 
-## `04_rg` - 
-**Description** - replace the read group with the sample details (**not implemented**)
+## `04_rg`
+**Description** - replace the read group with the sample details (**not implemented**). If no read group data is specifies, the input BAM is unchanged. 
 
-**Input Files** - 
+**Input Files** - `FILE.bam`
 
-**Output Files** -
+**Output Files** - `FILE.rg.bam`
 
-## `05_reorder` - 
-**Description** - reorder the BAM file to 
+## `05_reorder`
+**Description** - reorder the BAM file to the format the Broad Institute tools expect with `picard ReorderSam`
 
-**Input Files** - 
+**Input Files** - `FILE.rg.bam`
 
-**Output Files** -
+**Output Files** - `FILE.rg.reorder.bam`
 
 ## `06_sort`
-**Description** - Index the reference genome with `bwa index`. 
+**Description** - sort the BAM file by coordinate and modify the headers with `picard SortSam` 
 
-**Input Files** - 
+**Input Files** - `FILE.rg.reorder.bam`
 
-**Output Files** -
+**Output Files** - `FILE.rg.reorder.sort.bam`
 
 ## `07_validate`
-**Description** - Index the reference genome with `bwa index`. 
+**Description** - validate the BAM with `picard ValidateSamFile`. There should be no errors at this stage, as only Broad Institute tools have been used (and `bwa mem` invoked the `-M` flag)
 
-**Input Files** - 
+**Input Files** - `FILE.rg.reorder.sort.bam`
 
-**Output Files** -
+**Output Files** - `FILE.rg.reorder.sort.validate.txt`
 
 ## `08_markDup`
-**Description** - Index the reference genome with `bwa index`. 
+**Description** - mark duplicates reads with `picard MarkDuplicateReads`. Note that this step is skipped for the alternate pipeline. Also outputs duplication metrics. 
 
-**Input Files** - 
+**Input Files** - `FILE.rg.reorder.sort.bam`
 
-**Output Files** -
+**Output Files** - `FILE.rg.reorder.sort.nodup.bam` and `FILE.rg.reorder.sort.metrics`
 
 ## `09_rtc`
-**Description** - Index the reference genome with `bwa index`. 
+**Description** - select regions around indels to be realigned with `gatk -T RealignerTargetCreator`. 
 
-**Input Files** - 
+**Input Files** - `FILE.rg.reorder.sort.nodup.bam`
 
-**Output Files** -
+**Output Files** - `FILE.rg.reorder.sort.nodup.realign.intervals`
 
 ## `10_indelRealign`
-**Description** - Index the reference genome with `bwa index`. 
+**Description** - performs local realignment around indels with `gatk -T IndelRealigner` using the intervals from the previous step. 
 
-**Input Files** - 
+**Input Files** - `FILE.rg.reorder.sort.nodup.bam` and `FILE.rg.reorder.sort.nodup.realign.intervals`
 
-**Output Files** -
+**Output Files** - `FILE.rg.reorder.sort.nodup.realign.bam`
 
 ## `11_baseRecal`
 **Description** - Index the reference genome with `bwa index`. 
@@ -138,7 +139,6 @@ The following reference datasets are used:
 **Output Files** -
 
 ## `16_haplotype`
-## `01_index`
 **Description** - Index the reference genome with `bwa index`. 
 
 **Input Files** - 
