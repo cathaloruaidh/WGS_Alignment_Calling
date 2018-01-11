@@ -31,11 +31,16 @@ The following reference datasets are used:
  ```
  
 # Pipeline Overview
-1. `01_index` - index the reference genome with `bwa index`
-2. `02_dict` - create the sequence ductionary for the reference genome with `picard`
-3. `03_align` - 
-4. `04_rg`
-5. `05_reorder`
+
+# `01_index`
+**Description** - Index the reference genome with `bwa index`. 
+**Input Files** - 
+**Output Files** -
+
+2. `02_dict` - create the sequence ductionary for the reference genome with `picard CreateSequenceDictionary`. 
+3. `03_align` - align the paired end FASTQ files to the reference genome with `bwa mem`. See below for notes on the alternate pipeline. 
+4. `04_rg` - replace the read group with the sample details (**not implemented**)
+5. `05_reorder` - reorder the BAM file to 
 6. `06_sort`
 7. `07_validate`
 8. `08_markDup`
