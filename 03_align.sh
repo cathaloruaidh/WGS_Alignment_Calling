@@ -18,13 +18,25 @@
 ### Align the reads to the reference genome, and convert to a BAM
 # Run the BWA and samtools commands
 
-bwa mem \
-	-R "@RG\tID:${SOURCE_FILE}\tSM:${SOURCE_FILE}\tPL:ILLUMINA" \
-	-t ${NPROCS} \
-	-c 250 \
-	-M \
-	-v 1 ${GRCH38} ${READ1} ${READ2} \
-	| samtools view -Sb -h - > ${RESULTS_DIR}/${BAM}
+if [[ ${ALT} = false ]]
+then
+	bwa mem \
+		-R "@RG\tID:${OUTPUT_PREFIX##*/}\tSM:${OUTPUT_PREFIX##*/}\tPL:unknown\tLB:${OUTPUT_PREFIX##*/}" \
+		-t ${NPROCS} \
+		-c 250 \
+		-M \
+		-v 1 ${REF_FASTA} ${READ1} ${READ2} \
+		| samtools view -Sb -h - > ${RESULTS_DIR}/${BAM} \
+		2> >( tee ${LOG_DIR}/${OUTPUT_PREFIX}.ALIGN.${1}.log >&2 )
+else
+	bwa mem \
+		-R "@RG\tID:${OUTPUT_PREFIX##*/}\tSM:${OUTPUT_PREFIX##*/}\tPL:unknown\tLB:${OUTPUT_PREFIX##*/}" \
+		-t ${NPROCS} \
+		-c 250 \
+		-M \
+		-v 1 ${REF_FASTA} ${READ1} ${READ2} | samblaster -M --addMateTags | samtools view -Sb -h - > ${RESULTS_DIR}/${BAM} \
+		2> >( tee ${LOG_DIR}/${OUTPUT_PREFIX}.ALIGN.${1}.log >&2 )
+fi
 
 MAP_RET=$?
 

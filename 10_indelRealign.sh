@@ -22,20 +22,12 @@
 java ${JAVA_OPTIONS} -jar ${GATK_FILE} \
 	-T IndelRealigner \
 	-R ${REF_FASTA} \
-	-known ${INDELS} \
 	-I ${RESULTS_DIR}/${NODUP_BAM} \
 	-o ${RESULTS_DIR}/${REALIGN_BAM} \
-	-log ${LOG_DIR}/$1.log \
+	-known ${INDELS} \
 	-targetIntervals ${RESULTS_DIR}/${REALIGN_INTERVALS} \
-	--LODThresholdForCleaning 5.0 \
 	--consensusDeterminationModel USE_READS \
-	--entropyThreshold 0.15 \
-	--maxReadsInMemory 150000 \
-	--maxIsizeForMovement 3000 \
-	--maxPositionalMoveAllowed 200 \
-	--maxConsensuses 30 \
-	--maxReadsForConsensuses 120 \
-	--maxReadsForRealignment 20000 
+	-log ${LOG_DIR}/${OUTPUT_PREFIX}.ALIGN.${1}.log 
 
 
 IR_RET=$?
@@ -52,7 +44,7 @@ fi
 
 
 # If there were no errors, remove input file
-if [ ${CLEAN}=true ]
+if [ "${CLEAN}" = true ]
 then
 	rm ${RESULTS_DIR}/${NODUP_BAM}
 	log "Removed ${NODUP_BAM}" 4

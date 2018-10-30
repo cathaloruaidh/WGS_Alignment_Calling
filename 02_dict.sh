@@ -20,9 +20,10 @@
 
 if [ ! -f ${REF_FASTA%fa}dict ]
 then
-	PICARD CreateSequenceDictionary \
+	java ${JAVA_OPTIONS} -jar ${PICARD_FILE} CreateSequenceDictionary \
 		REFERENCE=${REF_FASTA} \
-		OUTPUT=${REF_FASTA%fa}dict
+		OUTPUT=${REF_FASTA%fa}dict \
+		2> >( tee ${LOG_DIR}/${OUTPUT_PREFIX}.ALIGN.${1}.log >&2 )
 else
 	log "Dictionary sequence for reference file already exists. " 3
 fi

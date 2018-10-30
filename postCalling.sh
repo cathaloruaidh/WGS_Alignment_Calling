@@ -229,33 +229,154 @@ done
 
 
 
-### Script directory
-# The alignment scripts live here. 
-# Test if the scripts directory exists
-if [ -z "${CURR_SCRIPT_DIR}" ]
+
+### Text variables
+PASS_TEST_LIGHT="[\e[102mPASSED\e[0m]"
+PASS_TEST="[\e[42mPASSED\e[0m]"
+FAIL_TEST_LIGHT="[\e[101mFAILED\e[0m]"
+FAIL_TEST="[\e[41mFAILED\e[0m]"
+
+
+
+
+# Max Memory used by one process
+# set to > 1/5 of Vishnu's max
+JAVA_TEMP="-Djava.io.tmpdir=${TEMP_DIR}"
+JAVA_OPTIONS=" -Xms${JAVA_MIN} -Xmx${JAVA_MAX} ${JAVA_TEMP}"
+### Set the program paths
+
+
+
+PICARD_FILE=${TOOL_DIR}/picard.jar
+
+GATK34_FILE=${TOOL_DIR}/gatk/GenomeAnalysisTK_3.4.jar
+GATK37_FILE=${TOOL_DIR}/gatk/GenomeAnalysisTK_3.7.jar
+GATK38_FILE=${TOOL_DIR}/gatk/GenomeAnalysisTK_3.8.jar
+
+
+
+# Edinburgh pipeline uses GATK 3.4, so start with that
+# and use newer versions until one is found. 
+
+if [ ! -f ${GATK_FILE} ]
 then
-	log "Problem with script directory. Exiting ... " 1
-	exit 3
+	GATK_FILE=${GATK34_FILE}
+fi
+
+
+if [ ! -f ${GATK_FILE} ]
+then
+	GATK_FILE=${GATK37_FILE}
+fi
+
+
+if [ ! -f ${GATK_FILE} ]
+then
+	GATK_FILE=${GATK38_FILE}
 fi
 
 
 
 
-### Set global variables, perform initial tests and create files
-mkdir -p ${LOG_DIR}
-touch ${MAIN_LOG_FILE}
-
-
-log "Calling initialisation script" 3 
-log " " 3
-. ${CURR_SCRIPT_DIR}/initialise.sh ${SOURCE_FILE} 
-
-if [ $? -ne 0 ]
+### Find the Resource Files, depending on the reference build.
+if [[ $( echo ${BUILD} | grep -E "19" ) ]]
 then
-	log "Error - initialisation script returned an error: $?" 1
-	exit 11
+	REFERENCE=hg19
+	REF_FILE=${REF_DIR}/${REFERENCE}/ucsc.hg19.fasta
+	INDELS_FILE=${REF_DIR}/${REFERENCE}/Mills_and_1000G_gold_standard.indels.hg19.sites.vcf.gz
+	DBSNP_NEW=${REF_DIR}/${REFERENCE}/dbsnp_150.hg19.vcf.gz
+	DBSNP_OLD=${REF_DIR}/${REFERENCE}/dbsnp_138.hg19.vcf.gz
+
+else
+	REFERENCE=GRCh38
+	REF_FILE=${REF_DIR}/${REFERENCE}/GRCh38_full_analysis_set_plus_decoy_hla.fa
+	INDELS_FILE=${REF_DIR}/${REFERENCE}/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
+	DBSNP_NEW=${REF_DIR}/${REFERENCE}/dbsnp_150.hg38.vcf.gz
+	DBSNP_OLD=${REF_DIR}/${REFERENCE}/dbsnp_146.hg38.vcf.gz
 fi
 
+
+
+if [[ ! -f ${REF_FASTA} ]]
+then
+	if [[ -z ${REF_FASTA} ]]
+	then
+		log "No referece file specified, using ${REF_FILE##*/}" 4
+	else
+		log "Specified reference file (${REF_FASTA}) does not exist, using ${REF_FILE##*/}" 2
+	fi
+
+	REF_FASTA=${REF_FILE}
+else
+	log "Reference file: $(basename ${REF_FASTA})" 4
+fi
+
+
+if [[ ! -f ${DBSNP} ]]
+then
+	if [[ -z ${DBSNP} ]]
+	then
+		log "No dbSNP file specified, using ${DBSNP_NEW##*/}" 4
+	else
+		log "Specified dbSNP file (${DBSNP}) does not exist, using $(basename ${DBSNP_NEW##*/})" 2
+	fi
+	DBSNP=${DBSNP_NEW}
+else
+	log "dbSNP file: $(basename ${DBSNP})" 4
+fi
+
+
+if [[ ! -f ${INDELS} ]]
+then
+	if [[ -z ${INDELS} ]]
+	then
+		log "No indel file specified, using ${INDELS_FILE##*/}" 4
+	else
+		log "Specified dbSNP file (${INDELS}) does not exist, using $(basename ${INDELS_FILE##*/})" 2
+	fi
+	INDELS=${INDELS_FILE}
+fi
+
+log " "  4
+
+
+
+
+
+
+
+### Name the output files
+
+BAM=${OUTPUT_PREFIX}.bam
+RG_BAM=${OUTPUT_PREFIX}.rg.bam
+REORDER_BAM=${OUTPUT_PREFIX}.rg.reorder.bam
+
+SORT_BAM=${OUTPUT_PREFIX}.rg.reorder.sort.bam
+SORT_BAI=${OUTPUT_PREFIX}.rg.reorder.sort.bai
+FIRST_VAL=${OUTPUT_PREFIX}.rg.reorder.sort.validation.txt
+
+DUP_MET=${OUTPUT_PREFIX}.rg.reorder.sort.metrics
+NODUP_BAM=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.bam
+NODUP_BAI=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.bai
+
+REALIGN_INTERVALS=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.intervals
+REALIGN_BAM=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bam
+
+BQSR_TABLE_BEFORE=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bqsr.before.table
+BQSR_TABLE_AFTER=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bqsr.after.table
+BQSR_PLOTS=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bqsr.plots.pdf
+BQSR_CSV=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bqsr.csv
+BQSR_BAM=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bqsr.bam
+
+FINAL_VAL=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bqsr.validation.txt
+BQSR_STATS=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bqsr.stats
+BQSR_WGS=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bqsr.wgs.txt
+
+GVCF=${OUTPUT_PREFIX}.g.vcf
+GVCF_GZ=${OUTPUT_PREFIX}.g.vcf.gz
+GVCF_TBI=${OUTPUT_PREFIX}.g.vcf.gz.tbi
+
+REPORT_TEX=${OUTPUT_PREFIX}.report.tex
 
 
 

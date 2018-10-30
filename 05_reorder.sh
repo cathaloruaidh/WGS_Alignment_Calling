@@ -24,7 +24,8 @@ java ${JAVA_OPTIONS} -jar ${PICARD_FILE} ReorderSam \
 	O=${RESULTS_DIR}/${REORDER_BAM} \
 	R=${REF_FASTA} \
 	CREATE_INDEX=true \
-	TMP_DIR=${TEMP_DIR}
+	TMP_DIR=${TEMP_DIR} \
+2> >( tee ${LOG_DIR}/${OUTPUT_PREFIX}.ALIGN.${1}.log >&2 )
 
 REORDER_RET=$?
 
@@ -37,7 +38,7 @@ fi
 
 
 # If there were no errors, remove input file
-if [ ${CLEAN}=true ]
+if [ "${CLEAN}" = true ]
 then
 	rm ${RESULTS_DIR}/${RG_BAM}
 	log "Removed ${RG_BAM}" 4

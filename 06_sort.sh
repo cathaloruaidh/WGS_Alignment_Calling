@@ -24,7 +24,9 @@ java ${JAVA_OPTIONS} -jar ${PICARD_FILE} SortSam \
 	O=${RESULTS_DIR}/${SORT_BAM} \
 	SORT_ORDER=coordinate \
 	CREATE_INDEX=true \
-	TMP_DIR=${TEMP_DIR}
+	MAX_RECORDS_IN_RAM=1500000 \
+	TMP_DIR=${TEMP_DIR} \
+2> >( tee ${LOG_DIR}/${OUTPUT_PREFIX}.ALIGN.${1}.log >&2 )
 
 SORT_RET=$?
 
@@ -38,7 +40,7 @@ fi
 
 
 # If there were no errors, remove input file
-if [ ${CLEAN}=true ]
+if [ "${CLEAN}" = true ]
 then
 	rm ${RESULTS_DIR}/${REORDER_BAM}
 	log "Removed ${REORDER_BAM}" 4

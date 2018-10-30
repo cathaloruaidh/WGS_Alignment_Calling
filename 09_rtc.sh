@@ -21,12 +21,12 @@
 
 java ${JAVA_OPTIONS} -jar ${GATK_FILE} \
 	-T RealignerTargetCreator \
-	-nt ${NPROCS} \
 	-R ${REF_FASTA} \
-	--known ${INDELS} \
 	-I ${RESULTS_DIR}/${NODUP_BAM} \
 	-o ${RESULTS_DIR}/${REALIGN_INTERVALS} \
-	-log ${LOG_DIR}/$1.log 
+	--known ${INDELS} \
+	-nt ${NPROCS} \
+	-log ${LOG_DIR}/${OUTPUT_PREFIX}.ALIGN.${1}.log 
 
 
 

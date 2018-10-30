@@ -21,7 +21,8 @@
 
 if [ ! -f ${REF_FASTA}.amb ] || [ ! -f ${REF_FASTA}.ann ] || [ ! -f ${REF_FASTA}.bwt ] || [ ! -f ${REF_FASTA}.pac ] || [ ! -f ${REF_FASTA}.sa ]
 then
-	${BWA} index ${REF_FASTA}
+	bwa index ${REF_FASTA} \
+	2> >( tee ${LOG_DIR}/${OUTPUT_PREFIX}.ALIGN.${1}.log >&2 )
 else
 	log "Index files for reference file already exist. " 3
 fi

@@ -26,7 +26,7 @@ FAIL_TEST="[\e[41mFAILED\e[0m]"
 
 
 
-# Create the main log file
+### Create the main log file
 if [ -f ${MAIN_LOG_FILE} ]
 then
 	mv ${MAIN_LOG_FILE} ${MAIN_LOG_FILE}.$(date +%Y-%m-%d_%H.%M.%S)
@@ -45,56 +45,64 @@ fi
 SOURCE_FILE=$1
 
 
-if [[ -f ${SOURCE_DIR}/${SOURCE_FILE}_R1.fastq ]]
-then
-	READ1=${SOURCE_DIR}/${SOURCE_FILE}_R1.fastq
-	READ2=${SOURCE_DIR}/${SOURCE_FILE}_R2.fastq
+if [[ ${S} == 1 ]]
+then 
+	if [[ -f ${SOURCE_FILE}_R1.fastq ]]
+	then
+		READ1=${SOURCE_FILE}_R1.fastq
+		READ2=${SOURCE_FILE}_R2.fastq
+	
+	elif [[ -f ${SOURCE_FILE}_R1.fq ]]
+	then
+		READ1=${SOURCE_FILE}_R1.fq
+		READ2=${SOURCE_FILE}_R2.fq
+	
+	elif [[ -f ${SOURCE_FILE}_R1.fastq.gz ]]
+	then
+		READ1=${SOURCE_FILE}_R1.fastq.gz
+		READ2=${SOURCE_FILE}_R2.fastq.gz
+	
+	elif [[ -f ${SOURCE_FILE}_R1.fq.gz ]]
+	then
+		READ1=${SOURCE_FILE}_R1.fq.gz
+		READ2=${SOURCE_FILE}_R2.fq.gz
+	
+	elif [[ -f ${SOURCE_FILE}.R1.fastq ]]
+	then
+		READ1=${SOURCE_FILE}.R1.fastq
+		READ2=${SOURCE_FILE}.R2.fastq
+	
+	elif [[ -f ${SOURCE_FILE}.R1.fq ]]
+	then
+		READ1=${SOURCE_FILE}.R1.fq
+		READ2=${SOURCE_FILE}.R2.fq
+	
+	elif [[ -f ${SOURCE_FILE}.R1.fastq.gz ]]
+	then
+		READ1=${SOURCE_FILE}.R1.fastq.gz
+		READ2=${SOURCE_FILE}.R2.fastq.gz
+	
+	elif [[ -f ${SOURCE_FILE}.R1.fq.gz ]]
+	then
+		READ1=${SOURCE_FILE}.R1.fq.gz
+		READ2=${SOURCE_FILE}.R2.fq.gz
+	else
+		log "Cannot find read files of the format '${SOURCE_FILE}_R1.fastq' etc." 1
+		exit 1
+	fi
 
-elif [[ -f ${SOURCE_DIR}/${SOURCE_FILE}_R1.fq ]]
-then
-	READ1=${SOURCE_DIR}/${SOURCE_FILE}_R1.fq
-	READ2=${SOURCE_DIR}/${SOURCE_FILE}_R2.fq
 
-elif [[ -f ${SOURCE_DIR}/${SOURCE_FILE}_R1.fastq.gz ]]
-then
-	READ1=${SOURCE_DIR}/${SOURCE_FILE}_R1.fastq.gz
-	READ2=${SOURCE_DIR}/${SOURCE_FILE}_R2.fastq.gz
-
-elif [[ -f ${SOURCE_DIR}/${SOURCE_FILE}_R1.fq.gz ]]
-then
-	READ1=${SOURCE_DIR}/${SOURCE_FILE}_R1.fq.gz
-	READ2=${SOURCE_DIR}/${SOURCE_FILE}_R2.fq.gz
-
-elif [[ -f ${SOURCE_DIR}/${SOURCE_FILE}.R1.fastq ]]
-then
-	READ1=${SOURCE_DIR}/${SOURCE_FILE}.R1.fastq
-	READ2=${SOURCE_DIR}/${SOURCE_FILE}.R2.fastq
-
-elif [[ -f ${SOURCE_DIR}/${SOURCE_FILE}.R1.fq ]]
-then
-	READ1=${SOURCE_DIR}/${SOURCE_FILE}.R1.fq
-	READ2=${SOURCE_DIR}/${SOURCE_FILE}.R2.fq
-
-elif [[ -f ${SOURCE_DIR}/${SOURCE_FILE}.R1.fastq.gz ]]
-then
-	READ1=${SOURCE_DIR}/${SOURCE_FILE}.R1.fastq.gz
-	READ2=${SOURCE_DIR}/${SOURCE_FILE}.R2.fastq.gz
-
-elif [[ -f ${SOURCE_DIR}/${SOURCE_FILE}.R1.fq.gz ]]
-then
-	READ1=${SOURCE_DIR}/${SOURCE_FILE}.R1.fq.gz
-	READ2=${SOURCE_DIR}/${SOURCE_FILE}.R2.fq.gz
 else
-	log "Cannot find read files of the format '${SOURCE_FILE}_R1.fastq' etc." 1
-	exit 1
+	if [[ $(find ${RESULTS_DIR} -name "${OUTPUT_PREFIX}*bam" | wc -l ) == 0 ]]
+	then
+		log "Cannot find BAM files in the results directory. " 1
+		exit 1
+	fi
 fi
 
 
-log "Found FASTQ files with prefix: ${SOURCE_FILE}" 3
+log "Found source files with prefix: ${SOURCE_FILE}" 3
 log " " 3
-
-
-
 
 
 
@@ -125,8 +133,8 @@ log " " 3
 
 # Max Memory used by one process
 # set to > 1/5 of Vishnu's max
-JAVA_TEMP="-Djava.io.temp=${TEMP_DIR}"
-JAVA_OPTIONS=" -Xmx${JAVA_MAX} -Xms${JAVA_MIN} ${JAVA_TEMP}"
+JAVA_TEMP="-Djava.io.tmpdir=${TEMP_DIR}"
+JAVA_OPTIONS=" -Xms${JAVA_MIN} -Xmx${JAVA_MAX} ${JAVA_TEMP}"
 
 
 
@@ -151,10 +159,10 @@ log " " 4
 if [ ! -d ${LOG_DIR} ]
 then
 	mkdir -p ${LOG_DIR}
-	log "Creating log directory: ${LOG_DIR}" 3
+	log "Creating log directory: ${LOG_DIR##*/}" 3
 
 else
-	log "Log directory already exists at: ${LOG_DIR#${SOURCE_DIR}/}" 4
+	log "Log directory already exists at: ${LOG_DIR##*/}" 4
 fi
 
 
@@ -162,12 +170,11 @@ fi
 # Results directory for all results files
 if [ ! -d ${RESULTS_DIR} ]
 then
-	log "Creating results directory: ${RESULTS_DIR}" 3
+	log "Creating results directory: ${RESULTS_DIR##*/}" 3
 	mkdir -p ${RESULTS_DIR}
 
 else
-	log "Results directory already exists at: ${RESULTS_DIR#${SOURCE_DIR}/}" 4 # - deleting contents" 3
-#	rm -f ${RESULTS_DIR}/* 2> /dev/null
+	log "Results directory already exists at: ${RESULTS_DIR##*/}" 4 
 fi
 
 
@@ -175,11 +182,11 @@ fi
 # Temporary directory for any intermediate steps
 if [ ! -d ${TEMP_DIR} ]
 then
-	log "Creating temp directory: ${TEMP_DIR#${SOURCE_DIR}/}" 3
+	log "Creating temp directory: ${TEMP_DIR##*/}" 3
 	mkdir -p ${TEMP_DIR}
 
 else
-	log "Temp directory already exists at: ${TEMP_DIR#${SOURCE_DIR}/} - deleting contents" 4
+	log "Temp directory already exists at: ${TEMP_DIR##*/} - deleting contents" 4
 	rm -f ${TEMP_DIR}/* 2> /dev/null
 fi
 
@@ -188,48 +195,15 @@ fi
 # Graphics directory for all images for further analysis
 if [ ! -d ${GRAPHICS_DIR} ]
 then
-	log "Creating graphics directory: ${GRAPHICS_DIR}" 3
+	log "Creating graphics directory: ${GRAPHICS_DIR##*/}" 3
 	mkdir -p ${GRAPHICS_DIR}
 
 else
-	log "Graphics directory already exists at: ${GRAPHICS_DIR#${SOURCE_DIR}/} - deleting contents" 4
-	rm -f ${GRAPHICS_DIR}/* 2> /dev/null
-fi
-
-
-
-# Error directory for any output errors
-if [ ! -d ${ERRORS_DIR} ]
-then
-	log "Creating error directory: ${ERRORS_DIR#${SOURCE_DIR}/}" 3
-	mkdir -p ${ERRORS_DIR}
-
-else
-	log "Error directory already exists at: ${ERRORS_DIR#${SOURCE_DIR}/} - deleting contents" 4
-	rm -f ${ERRORS_DIR}/* 2> /dev/null
+	log "Graphics directory already exists at: ${GRAPHICS_DIR##*/}" 4
 fi
 
 
 log " " 4
-
-
-
-# Create summary file for results
-if [ -f ${SUMMARY_FILE} ]
-then
-	log "Renaming previous summary file" 3
-	mv ${SUMMARY_FILE} ${SUMMARY_FILE}.$(date +%Y-%m-%d_%H.%M.%S)
-	touch ${SUMMARY_FILE}
-else
-	log "Creating the summary file: ${SUMMARY_FILE}" 3
-	touch ${SUMMARY_FILE}
-fi
-
-echo "Data Summary File for Quality Control" >> ${SUMMARY_FILE}
-date >> ${SUMMARY_FILE}
-echo -e "\n\n" >> ${SUMMARY_FILE}
-
-
 log " " 3
 
 
@@ -322,20 +296,35 @@ fi
 
 
 
-### Find the Resource Files
-INDELS=${REF_DIR}/GRCh38/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
-THOUSANDG=${REF_DIR}/GRCh38/1000G_phase1.snps.high_confidence.hg38.vcf.gz
-OMNI=${REF_DIR}/GRCh38/1000G_omni2.5.hg38.vcf.gz
-HAPMAP=${REF_DIR}/GRCh38/hapmap_3.3.hg38.vcf.gz
+### Find the Resource Files, depending on the reference build.
+if [[ $( echo ${BUILD} | grep -E "19" ) ]]
+then
+	REFERENCE=hg19
+	REF_FILE=${REF_DIR}/${REFERENCE}/ucsc.hg19.fasta
+	INDELS_FILE=${REF_DIR}/${REFERENCE}/Mills_and_1000G_gold_standard.indels.hg19.sites.vcf.gz
+	DBSNP_NEW=${REF_DIR}/${REFERENCE}/dbsnp_150.hg19.vcf.gz
+	DBSNP_OLD=${REF_DIR}/${REFERENCE}/dbsnp_138.hg19.vcf.gz
+
+else
+	REFERENCE=GRCh38
+	REF_FILE=${REF_DIR}/${REFERENCE}/GRCh38_full_analysis_set_plus_decoy_hla.fa
+	INDELS_FILE=${REF_DIR}/${REFERENCE}/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
+	DBSNP_NEW=${REF_DIR}/${REFERENCE}/dbsnp_150.hg38.vcf.gz
+	DBSNP_OLD=${REF_DIR}/${REFERENCE}/dbsnp_146.hg38.vcf.gz
+fi
 
 
-log " " 4
 
 if [[ ! -f ${REF_FASTA} ]]
 then
-	GRCH38=${REF_DIR}/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa
-	log "Specified reference file (${REF_FASTQ}) does not exist, using $(basename ${GRCH38})" 2
-	REF_FASTA=${GRCH38}
+	if [[ -z ${REF_FASTA} ]]
+	then
+		log "No referece file specified, using ${REF_FILE##*/}" 4
+	else
+		log "Specified reference file (${REF_FASTA}) does not exist, using ${REF_FILE##*/}" 2
+	fi
+
+	REF_FASTA=${REF_FILE}
 else
 	log "Reference file: $(basename ${REF_FASTA})" 4
 fi
@@ -343,51 +332,28 @@ fi
 
 if [[ ! -f ${DBSNP} ]]
 then
-	DBSNP150=${REF_DIR}/GRCh38/dbsnp_150.hg38.vcf.gz
-	DBSNP146=${REF_DIR}/GRCh38/dbsnp_146.hg38.vcf.gz
-
-	log "Specified dbSNP file (${DBSNP}) does not exist, using $(basename ${DBSNP150})" 2
-	DBSNP=${DBSNP150}
+	if [[ -z ${DBSNP} ]]
+	then
+		log "No dbSNP file specified, using ${DBSNP_NEW##*/}" 4
+	else
+		log "Specified dbSNP file (${DBSNP}) does not exist, using $(basename ${DBSNP_NEW##*/})" 2
+	fi
+	DBSNP=${DBSNP_NEW}
 else
 	log "dbSNP file: $(basename ${DBSNP})" 4
 fi
 
 
-
 if [[ ! -f ${INDELS} ]]
 then
-	log "The indel file does not exist at ${INDELS}" 1
-	exit 1
+	if [[ -z ${INDELS} ]]
+	then
+		log "No indel file specified, using ${INDELS_FILE##*/}" 4
+	else
+		log "Specified dbSNP file (${INDELS}) does not exist, using $(basename ${INDELS_FILE##*/})" 2
+	fi
+	INDELS=${INDELS_FILE}
 fi
-
-log "Indel reference file: $(basename ${INDELS})" 4
-
-
-if [[ ! -f ${THOUSANDG} ]]
-then
-	log "The 1000G reference VCF file does not exist at ${THOUSANDG}" 1
-	exit 1
-fi
-
-log "1000G VCF reference file: $(basename ${THOUSANDG})" 4
-
-
-if [[ ! -f ${OMNI} ]]
-then
-	log "The Omni reference VCF file does not exist at ${OMNI}" 1
-	exit 1
-fi
-
-log "Omni reference file: $(basename ${OMNI})" 4
-
-
-if [[ ! -f ${HAPMAP} ]]
-then
-	log "The HapMap reference VCF file does not exist at ${HAPMAP}" 1
-	exit 1
-fi
-
-log "HapMap reference file: $(basename ${HAPMAP})" 4
 
 log " "  4
 
@@ -396,36 +362,36 @@ log " "  4
 
 
 
+
 ### Name the output files
 
-BAM=${SOURCE_FILE}.bam
-RG_BAM=${SOURCE_FILE}.rg.bam
-REORDER_BAM=${SOURCE_FILE}.rg.reorder.bam
+BAM=${OUTPUT_PREFIX}.bam
+RG_BAM=${OUTPUT_PREFIX}.rg.bam
+REORDER_BAM=${OUTPUT_PREFIX}.rg.reorder.bam
 
-SORT_BAM=${SOURCE_FILE}.rg.reorder.sort.bam
-SORT_BAI=${SOURCE_FILE}.rg.reorder.sort.bai
-FIRST_VAL=${SOURCE_FILE}.rg.reorder.sort.bam.validation.txt
+SORT_BAM=${OUTPUT_PREFIX}.rg.reorder.sort.bam
+SORT_BAI=${OUTPUT_PREFIX}.rg.reorder.sort.bai
+FIRST_VAL=${OUTPUT_PREFIX}.rg.reorder.sort.validation.txt
 
-DUP_MET=${SOURCE_FILE}.rg.reorder.sort.metrics
-NODUP_BAM=${SOURCE_FILE}.rg.reorder.sort.nodup.bam
-NODUP_BAI=${SOURCE_FILE}.rg.reorder.sort.nodup.bai
+DUP_MET=${OUTPUT_PREFIX}.rg.reorder.sort.metrics
+NODUP_BAM=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.bam
+NODUP_BAI=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.bai
 
-REALIGN_INTERVALS=${SOURCE_FILE}.rg.reorder.sort.nodup.realign.intervals
-REALIGN_BAM=${SOURCE_FILE}.rg.reorder.sort.nodup.realign.bam
+REALIGN_INTERVALS=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.intervals
+REALIGN_BAM=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bam
 
-BQSR_TABLE_BEFORE=${SOURCE_FILE}.rg.reorder.sort.nodup.realign.bqsr.before.table
-BQSR_TABLE_AFTER=${SOURCE_FILE}.rg.reorder.sort.nodup.realign.bqsr.after.table
-BQSR_PLOTS=${SOURCE_FILE}.rg.reorder.sort.nodup.realign.bqsr.plots.pdf
-BQSR_CSV=${SOURCE_FILE}.rg.reorder.sort.nodup.realign.bqsr.csv
-BQSR_BAM=${SOURCE_FILE}.rg.reorder.sort.nodup.realign.bqsr.bam
+BQSR_TABLE_BEFORE=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bqsr.before.table
+BQSR_TABLE_AFTER=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bqsr.after.table
+BQSR_PLOTS=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bqsr.plots.pdf
+BQSR_CSV=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bqsr.csv
+BQSR_BAM=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bqsr.bam
 
-FINAL_VAL=${SOURCE_FILE}.rg.reorder.sort.nodup.realign.bqsr.validation.txt
-BQSR_STATS=${SOURCE_FILE}.rg.reorder.sort.nodup.realign.bqsr.stats
-BQSR_WGS=${SOURCE_FILE}.rg.reorder.sort.nodup.realign.bqsr.wgs.txt
-FINAL_PREFIX=${SOURCE_FILE}.final
+FINAL_VAL=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bqsr.validation.txt
+BQSR_STATS=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bqsr.stats
+BQSR_WGS=${OUTPUT_PREFIX}.rg.reorder.sort.nodup.realign.bqsr.wgs.txt
 
+GVCF=${OUTPUT_PREFIX}.g.vcf
+GVCF_GZ=${OUTPUT_PREFIX}.g.vcf.gz
+GVCF_TBI=${OUTPUT_PREFIX}.g.vcf.gz.tbi
 
-GVCF=${SOURCE_FILE}.g.vcf
-GVCF_GZ=${SOURCE_FILE}.g.vcf.gz
-GVCF_TBI=${SOURCE_FILE}.g.vcf.gz.tbi
-
+REPORT_TEX=${OUTPUT_PREFIX}.report.tex

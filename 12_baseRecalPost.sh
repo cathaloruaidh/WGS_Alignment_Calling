@@ -22,15 +22,15 @@
 
 java ${JAVA_OPTIONS} -jar ${GATK_FILE} \
 	-T BaseRecalibrator \
-	-nct ${NPROCS} \
 	-R ${REF_FASTA} \
+	-I ${RESULTS_DIR}/${REALIGN_BAM} \
+	-o ${RESULTS_DIR}/${BQSR_TABLE_AFTER} \
 	-knownSites ${DBSNP} \
 	-knownSites ${INDELS} \
 	-BQSR  ${RESULTS_DIR}/${BQSR_TABLE_BEFORE} \
-	-I ${RESULTS_DIR}/${REALIGN_BAM} \
-	-o ${RESULTS_DIR}/${BQSR_TABLE_AFTER} \
-	-log ${LOG_DIR}/$1.log \
-	--sort_by_all_columns 
+	--sort_by_all_columns  \
+	-nct ${NPROCS} \
+	-log ${LOG_DIR}/${OUTPUT_PREFIX}.ALIGN.${1}.log
 
 
 BR_RET=$?

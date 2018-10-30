@@ -26,13 +26,14 @@ else
 	java ${JAVA_OPTIONS} -jar ${PICARD_FILE} AddOrReplaceReadGroups \
 		I=${RESULTS_DIR}/${BAM} \
 		O=${RESULTS_DIR}/${RG_BAM} \
-		RGID=${SOURCE_FILE} \
-		RGLB=lib1 \
+		RGID=${SOURCE_FILE##*/} \
+		RGLB=${SOURCE_FILE##*/} \
 		RGPL=illumina \
-		RGPU=${SOURCE_FILE} \
-		RGSM=${SOURCE_FILE} \
+		RGPU=${SOURCE_FILE##*/} \
+		RGSM=${SOURCE_FILE##*/} \
 		CREATE_INDEX=true \
-		TMP_DIR=${TEMP_DIR}
+		TMP_DIR=${TEMP_DIR} \
+	2> >( tee ${LOG_DIR}/${OUTPUT_PREFIX}.ALIGN.${1}.log >&2 )
 fi
 RG_RET=$?
 
@@ -45,7 +46,7 @@ fi
 
 
 # If there were no errors, remove input file
-if [ ${CLEAN}=true ]
+if [ "${CLEAN}" = true ]
 then
 	rm ${RESULTS_DIR}/${BAM}
 	log "Removed ${BAM}" 4

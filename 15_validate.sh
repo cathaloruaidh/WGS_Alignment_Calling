@@ -26,7 +26,8 @@ java ${JAVA_OPTIONS} -jar ${PICARD_FILE} ValidateSamFile \
 	O=${RESULTS_DIR}/${FINAL_VAL} \
 	MODE=SUMMARY \
 	MAX_OUTPUT=null \
-	TMP_DIR=${TEMP_DIR}
+	TMP_DIR=${TEMP_DIR} \
+2> >( tee ${LOG_DIR}/${OUTPUT_PREFIX}.ALIGN.${1}.log >&2 )
 
 VAL_RET=$?
 
@@ -43,11 +44,11 @@ S_RET=$?
 
 
 log "Plotting graphs" 3
-plot-bamstats -p ${GRAPHICS_DIR}/${FINAL_PREFIX} ${RESULTS_DIR}/${BQSR_STATS}
+plot-bamstats -p ${GRAPHICS_DIR}/${OUTPUT_PREFIX} ${RESULTS_DIR}/${BQSR_STATS}
 
 B_RET=$?
 
-rm ${GRAPHICS_DIR}/${SOURCE_FILE}*.gp
+rm ${GRAPHICS_DIR}/${OUTPUT_PREFIX##*/}*.gp
 
 
 # If the mapping gave an error, return, else cleanup

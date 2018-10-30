@@ -26,7 +26,8 @@ java ${JAVA_OPTIONS} -jar ${PICARD_FILE} MarkDuplicates \
 	M=${RESULTS_DIR}/${DUP_MET} \
 	AS=true \
 	CREATE_INDEX=true \
-	TMP_DIR=${TEMP_DIR}
+	TMP_DIR=${TEMP_DIR} \
+2> >( tee ${LOG_DIR}/${OUTPUT_PREFIX}.ALIGN.${1}.log >&2 )
 
 
 MD_RET=$?
@@ -41,7 +42,7 @@ fi
 
 
 # If there were no errors, remove input file
-if [ ${CLEAN}=true ]
+if [ "${CLEAN}" = true ]
 then
 	rm ${RESULTS_DIR}/${SORT_BAM}
 	log "Removed ${SORT_BAM}" 4

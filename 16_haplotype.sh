@@ -20,31 +20,16 @@
 # Run the GATK command
 
 
-java ${JAVA_TEMP} -jar ${GATK_FILE} -T HaplotypeCaller \
+java ${JAVA_OPTIONS} -jar ${GATK_FILE} -T HaplotypeCaller \
 	-R ${REF_FASTA} \
 	-I ${RESULTS_DIR}/${BQSR_BAM} \
 	-o ${RESULTS_DIR}/${GVCF} \
 	-ERC GVCF \
-	--annotation BaseQualityRankSumTest \
-	--annotation ClippingRankSumTest \
-	--annotation Coverage \
-	--annotation FisherStrand \
-	--annotation GCContent \
-	--annotation HaplotypeScore \
-	--annotation HomopolymerRun \
-	--annotation MappingQualityRankSumTest \
+	--dbsnp ${DBSNP} \
 	--annotation MappingQualityZero \
-	--annotation QualByDepth \
-	--annotation ReadPosRankSumTest \
-	--annotation RMSMappingQuality \
-	--annotation DepthPerAlleleBySample \
-	--annotation DepthPerSampleHC \
-	--annotation StrandBiasBySample \
 	--annotation VariantType \
-	--annotation GCContent\
 	--annotation AlleleBalance \
 	--annotation AlleleBalanceBySample \
-	--dbsnp ${DBSNP} \
 	--excludeAnnotation ChromosomeCounts \
 	--excludeAnnotation FisherStrand \
 	--excludeAnnotation StrandOddsRatio \
@@ -56,14 +41,8 @@ java ${JAVA_TEMP} -jar ${GATK_FILE} -T HaplotypeCaller \
 	--GVCFGQBands 60 \
 	--GVCFGQBands 80 \
 	--standard_min_confidence_threshold_for_calling 0 \
-	--interval_set_rule INTERSECTION \
-	--read_filter BadCigar \
-	--read_filter NotPrimaryAlignment \
-	--unsafe LENIENT_VCF_PROCESSING \
-	--variant_index_parameter 128000 \
-	--variant_index_type LINEAR \
 	-nct 4 \
-	-log ${LOG_DIR}/$1.log 
+	-log ${LOG_DIR}/${OUTPUT_PREFIX}.ALIGN.${1}.log 
 	
 HC_RET=$?
 

@@ -22,12 +22,12 @@
 
 java ${JAVA_OPTIONS} -jar ${GATK_FILE} \
 	-T PrintReads \
-	-nct ${NPROCS} \
 	-R ${REF_FASTA} \
 	-I ${RESULTS_DIR}/${REALIGN_BAM} \
 	-o ${RESULTS_DIR}/${BQSR_BAM} \
 	-BQSR ${RESULTS_DIR}/${BQSR_TABLE_BEFORE} \
-	-log ${LOG_DIR}/$1.log 
+	-nct ${NPROCS} \
+	-log ${LOG_DIR}/${OUTPUT_PREFIX}.ALIGN.${1}.log 
 
 
 PR_RET=$?
@@ -44,7 +44,7 @@ fi
 
 
 # If there were no errors, remove input file
-if [ ${CLEAN}=true ]
+if [ "${CLEAN}" = true ]
 then
 	rm ${RESULTS_DIR}/${REALIGN_BAM}
 	log "Removed ${REALIGN_BAM}" 4

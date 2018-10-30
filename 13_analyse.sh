@@ -27,7 +27,7 @@ java ${JAVA_OPTIONS} -jar ${GATK_FILE} \
 	-after ${RESULTS_DIR}/${BQSR_TABLE_AFTER} \
 	-plots ${GRAPHICS_DIR}/${BQSR_PLOTS} \
 	-csv ${RESULTS_DIR}/${BQSR_CSV} \
-	-log ${LOG_DIR}/$1.log 
+	-log ${LOG_DIR}/${OUTPUT_PREFIX}.ALIGN.${1}.log 
 
 
 AC_RET=$?
