@@ -18,10 +18,13 @@
 ### Align the reads to the reference genome, and convert to a BAM
 # Run the BWA and samtools commands
 
+
+READ_GROUP="@RG\tID:${OUTPUT_PREFIX##*/}\tSM:${OUTPUT_PREFIX##*/}\tPL:illumina\tPU:unknown\tLB:${OUTPUT_PREFIX##*/}\tCN:unknown\tDS:${OUTPUT_PREFIX##*/}"
+
 if [[ ${ALT} = false ]]
 then
 	bwa mem \
-		-R "@RG\tID:${OUTPUT_PREFIX##*/}\tSM:${OUTPUT_PREFIX##*/}\tPL:unknown\tLB:${OUTPUT_PREFIX##*/}" \
+		-R ${READ_GROUP} \
 		-t ${NPROCS} \
 		-c 250 \
 		-M \
@@ -30,7 +33,7 @@ then
 		2> >( tee ${LOG_DIR}/${OUTPUT_PREFIX}.ALIGN.${1}.log >&2 )
 else
 	bwa mem \
-		-R "@RG\tID:${OUTPUT_PREFIX##*/}\tSM:${OUTPUT_PREFIX##*/}\tPL:unknown\tLB:${OUTPUT_PREFIX##*/}" \
+		-R ${READ_GROUP} \
 		-t ${NPROCS} \
 		-c 250 \
 		-M \
