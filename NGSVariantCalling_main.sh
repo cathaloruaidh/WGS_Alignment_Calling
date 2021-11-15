@@ -82,8 +82,9 @@ cmd(){
 
 usage(){
 echo -e "\
-Usage: `cmd` [OPTIONS ...] \n
+Usage: `cmd` [OPTIONS ...] \n"
 
+echo -e "\
 -a, --alt; ; Run alternate pipeline (mark duplicates); [${ALT}]
 -b, --build ; hg19,hg38 ; Genome build; [hg38]
 -c, --clean; ; Remove all input files once finished; [${CLEAN}] 
