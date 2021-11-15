@@ -45,7 +45,7 @@ The following reference datasets are used:
 
 **Input Files** - `REFERENCE.fa`
 
-**Output Files** - `REFEREMCE.dict`
+**Output Files** - `REFERENCE.dict`
 
 ## `03_align`
 **Description** - align the paired end FASTQ files to the reference genome with `bwa mem`. The alternate pipeline (specified by `-a, --alt`) marks duplicates reads at this stage with `samblaster`. Default is to mark duplicates with `picard` later. 
