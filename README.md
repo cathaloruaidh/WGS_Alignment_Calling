@@ -1,4 +1,4 @@
-# WGSVariantCalling
+# WGS Read Alignment and Variant Calling
 WGS Variant Calling pipeline from paired-end FASTQ to gVCF
 
 # Dependencies
